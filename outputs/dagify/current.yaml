@@ -1,12 +1,10 @@
 dag_type: plain_text
-description: A workflow to build a fully functional expense tracker that includes
-  user authentication, a front‑end interface, data storage, report generation, and
-  integration with a bank account for automatic expense import.
+description: Create and deploy a fully functional expense tracker application.
 name: build_expense_tracker
 nodes:
   add_authentication_features:
     agent: false
-    description: Implement user authentication to secure access.
+    description: Add authentication and authorization.
     name: add_authentication_features
     nodes_depended_on:
     - build_front_end_interface
@@ -17,7 +15,7 @@ nodes:
       as OAuth or password hashing, to secure access to the expense tracker.
   build_front_end_interface:
     agent: false
-    description: Create a user interface for interacting with the expense tracker.
+    description: Develop the front‑end UI.
     name: build_front_end_interface
     nodes_depended_on:
     - develop_api_for_data_import
@@ -28,7 +26,7 @@ nodes:
       edit, and delete expenses, view reports, and access other core features.
   choose_database_technology:
     agent: false
-    description: Select a suitable database technology for storing expense data.
+    description: Select the database technology that will store all expense data.
     name: choose_database_technology
     nodes_depended_on: []
     nodes_dependent_on:
@@ -40,7 +38,7 @@ nodes:
       performance, and ease of use. Provide a brief justification for your choice.
   create_expense_categories:
     agent: false
-    description: Create a list of predefined expense categories.
+    description: Define the set of expense categories.
     name: create_expense_categories
     nodes_depended_on:
     - design_database_schema
@@ -51,53 +49,58 @@ nodes:
       and reporting, such as 'Food,' 'Transportation,' and 'Housing'.
   design_database_schema:
     agent: false
-    description: Create a database schema to store expense data with all relevant
-      fields and relationships.
+    description: Create the database schema for expense data.
     name: design_database_schema
     nodes_depended_on:
     - choose_database_technology
     nodes_dependent_on:
     - create_expense_categories
     - develop_api_for_data_import
+    - implement_data_export_features
     prompt: Design a database schema to store expense data, including fields for expense
       categories, dates, amounts, user associations, and bank transaction identifiers.
   develop_api_for_data_import:
     agent: false
-    description: Create RESTful API endpoints for importing expense data from external
-      sources.
+    description: Create API endpoints for importing data.
     name: develop_api_for_data_import
     nodes_depended_on:
     - design_database_schema
     - choose_database_technology
+    - create_expense_categories
     nodes_dependent_on:
     - integrate_bank_api
+    - implement_data_export_features
+    - generate_reports
     prompt: Develop RESTful API endpoints for importing expense data from external
       sources, including CSV and bank statement uploads.
   generate_reports:
     agent: false
-    description: Generate reports summarizing user expenses.
+    description: Build reporting functionality.
     name: generate_reports
     nodes_depended_on:
     - implement_data_export_features
     - add_authentication_features
     - integrate_bank_api
-    nodes_dependent_on: []
+    nodes_dependent_on:
+    - proceed_to_actual_build
     prompt: Create features to generate reports summarizing user expenses, including
       totals, averages, and trends, considering different time periods and expense
       categories.
   implement_data_export_features:
     agent: false
-    description: Implement features to export expense data in different formats.
+    description: Add data export capabilities.
     name: implement_data_export_features
     nodes_depended_on:
     - design_database_schema
     - choose_database_technology
-    nodes_dependent_on: []
+    - develop_api_for_data_import
+    nodes_dependent_on:
+    - generate_reports
     prompt: Implement features to export expense data in different formats, such as
       CSV or Excel, for users to share with accountants or financial advisors.
   integrate_bank_api:
     agent: false
-    description: Integrate with a bank API to automatically pull recent transactions.
+    description: Connect the application to a bank API for automatic transaction import.
     name: integrate_bank_api
     nodes_depended_on:
     - develop_api_for_data_import
@@ -105,3 +108,12 @@ nodes:
     - generate_reports
     prompt: Integrate with a bank API (e.g., Plaid or similar) to automatically pull
       recent transactions and map them to expense categories.
+  proceed_to_actual_build:
+    agent: false
+    description: Trigger the final build and deployment.
+    name: proceed_to_actual_build
+    nodes_depended_on:
+    - generate_reports
+    nodes_dependent_on: []
+    prompt: Deploy the fully built expense tracker application to the target environment,
+      ensuring all services are operational and accessible to end users.
