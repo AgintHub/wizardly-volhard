@@ -6,30 +6,36 @@ Create frontend components for expense data entry with validation.
 
 ## Conceptual Info
 
-This node generates frontend UI components for entering expense data, ensuring local validation of user inputs such as amount, category, date, and description to facilitate accurate data collection.
+Generates the identifiers of all frontend form components required for expense entry, synthesizing UI component specifications and backend data model definitions, and embeds client‑side validation rules to ensure data integrity before submission.
 
 ## Docstring
 
 ### Summary
-This function creates frontend expense entry forms with integrated validation logic.
+Create expense‑entry form components with client‑side validation based on UI specs and backend schema.
 
 ### Parameters
 
-- **inputs** (dict): Dictionary containing design and data structure inputs, including UI component specifications and database schema details.
+- **ui_components** (List[str]): List of UI component names produced by the design_ui_components node (e.g., ['ExpenseForm', 'DatePicker']).
+- **db_tables** (List[str]): List of database table definitions from the set_backend_data_structure node (e.g., ['Users', 'Expenses', 'Categories']).
 
 ### Returns
 
-dict: A dictionary with a key 'frontend_forms' mapping to a list of form component names created for expense entry.
+List[str]: Names of the generated frontend form components ready for integration (e.g., ['ExpenseFormComponent']).
 
 ### Raises
 
-- ValueError: If required data structures or UI specifications are missing or invalid.
-- Exception: For any other errors during form creation or validation logic setup.
+- ValueError: If required UI components or database table definitions are missing, or if validation rules cannot be derived.
 
 ### Examples
 
 ```python
->>> forms = create_expense_entry_forms({'ui_components': ['AmountField', 'CategoryDropdown', 'DatePicker', 'DescriptionText']}, {'db_tables': ['Expenses']})
->>> print(forms)
-["ExpenseAmountForm", "ExpenseCategoryForm", "ExpenseDateForm", "ExpenseDescriptionForm"]
+>>> ui = ['ExpenseForm', 'DatePicker', 'CategoryDropdown']
+>>> tables = ['Users', 'Expenses', 'Categories']
+>>> forms = generate_frontend_forms(ui, tables)
+['ExpenseFormComponent']
+```
+
+```python
+>>> generate_frontend_forms([], ['Expenses'])
+ValueError: UI component specifications are required to create forms.
 ```

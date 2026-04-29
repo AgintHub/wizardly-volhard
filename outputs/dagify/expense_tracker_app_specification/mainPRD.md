@@ -11,9 +11,9 @@ PRDs for nodes in the 'expense_tracker_app_specification' module.
 
 - [set_backend_data_structure](#set_backend_data_structure)
 
-- [create_user_authentication](#create_user_authentication)
-
 - [implement_data_storage](#implement_data_storage)
+
+- [create_user_authentication](#create_user_authentication)
 
 - [implement_data_input](#implement_data_input)
 
@@ -34,17 +34,17 @@ List all core functionalities required for the expense tracker app.
 
 ### Conceptual Info
 
-This node synthesizes the essential functional requirements of the expense‑tracker application, providing a high‑level blueprint that guides UI design, data modeling, and implementation.
+Defines the high‑level functional requirements for the expense‑tracker application, outlining essential features such as expense CRUD operations, reporting, user account management, and application settings. These requirements drive UI design and backend data modeling in downstream nodes.
 
 ### Docstring
 
-**Summary:** Generates a list of high‑level functional requirements for an expense tracker application.
+**Summary:** Generate a list of core functional requirements for an expense‑tracker application.
 
-**Returns:** List[str] - A list of high‑level functional requirements covering core expense‑tracker features.
+**Returns:** List[str] - A list of high‑level functional requirements covering expense management, reporting, user accounts, and settings.
 
 **Raises:**
 
-- RuntimeError: If the requirements cannot be generated due to an internal processing error.
+- RuntimeError: If the requirement generation process fails unexpectedly.
 **Examples:**
 
 ```python
@@ -53,7 +53,6 @@ This node synthesizes the essential functional requirements of the expense‑tra
 ```
 
 ```python
->>> # The function returns the same list each call
 >>> requirements = define_app_functionality_requirements()
 >>> len(requirements)
 7
@@ -70,36 +69,38 @@ Create wireframes and UI component specifications for the app screens.
 
 ### Conceptual Info
 
-Transforms high‑level functional requirements into concrete UI component names and screen identifiers, providing a basis for wireframe creation and front‑end development.
+Generates detailed UI component names and high‑level wireframe descriptions for each application screen based on the functional requirements supplied by the parent node.
 
 ### Docstring
 
-**Summary:** Generate a list of UI component and screen names based on supplied functional requirements.
+**Summary:** Create wireframes and enumerate UI component names for the expense‑tracker app.
 
 **Parameters:**
 
-- requirements (List[str]): High‑level functional requirements produced by the parent node (e.g., login, expense entry, reporting).
-**Returns:** List[str] - Ordered list of UI component and screen identifiers that correspond to the supplied requirements.
+- requirements (List[str]): High‑level functional requirements produced by `define_app_functionality_requirements`.
+**Returns:** List[str] - Names of UI components and screens derived from the functional requirements.
 
 **Raises:**
 
-- ValueError: If the requirements list is empty or does not contain any recognizable screen keywords.
+- ValueError: If `requirements` is empty or None.
+- KeyError: If a required functional requirement cannot be mapped to a UI component.
 **Examples:**
 
 ```python
->>> design_ui_components([
-...     "User login and authentication",
-...     "Create and edit expense entries",
-...     "View expense list with filters",
-...     "Generate expense reports and charts",
-...     "Adjust user settings"
->>> ])
+>>> requirements = [
+...     "User authentication and login",
+...     "Create, edit, and delete expense entries",
+...     "View expense list with filtering",
+...     "Generate expense summary reports",
+...     "Configure user settings"
+>>> ]
+>>> ui_components = design_ui_components(requirements)
 ['LoginScreen', 'ExpenseEntryForm', 'ExpenseListView', 'ReportDashboard', 'SettingsScreen']
 ```
 
 ```python
->>> design_ui_components(["Login", "Expense entry", "Expense list"])
-['LoginScreen', 'ExpenseEntryForm', 'ExpenseListView']
+>>> design_ui_components([])
+ValueError: requirements list cannot be empty.
 ```
 
 
@@ -113,77 +114,30 @@ Define the database schema or data models for users, expenses, categories, and r
 
 ### Conceptual Info
 
-This node converts high‑level functional requirements into concrete database table definitions (SQL DDL statements or ORM model classes) for the core entities of the expense tracker: Users, Expenses, Categories, and Reports. It establishes column types, primary/foreign keys, and necessary constraints to support CRUD operations and reporting.
+Creates a relational database schema for the expense‑tracker application based on the high‑level functional requirements. It defines the Users, Expenses, Categories, and Reports tables, their columns, data types, primary/foreign keys, and inter‑table relationships, returning ready‑to‑execute CREATE TABLE statements.
 
 ### Docstring
 
-**Summary:** Generate database schema definitions for the expense‑tracker backend based on functional requirements.
+**Summary:** Generates SQL CREATE TABLE statements for the core data model of the expense‑tracker app from functional requirements.
 
 **Parameters:**
 
-- requirements (List[str]): High‑level functional requirements produced by the `define_app_functionality_requirements` node.
-**Returns:** List[str] - A list of strings, each containing a CREATE TABLE statement (or equivalent ORM model) for Users, Expenses, Categories, and Reports.
+- requirements (List[str]): High‑level functional requirements produced by the define_app_functionality_requirements node.
+**Returns:** List[str] - SQL CREATE TABLE statements (as strings) for Users, Expenses, Categories, and Reports.
 
 **Raises:**
 
-- ValueError: If the `requirements` list is empty or None.
-- SchemaGenerationError: If a requirement cannot be mapped to a concrete table or column definition.
+- ValueError: If the requirements list is empty or lacks any core domain needed to infer the schema.
 **Examples:**
 
 ```python
->>> define_backend_schema([
-...     'User registration and authentication',
-...     'Expense entry, editing and deletion',
-...     'Expense categorization',
-...     'Summary reports by period and category'
->>> ])
-["CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, email TEXT);",
- "CREATE TABLE categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, user_id INTEGER NOT NULL, FOREIGN KEY(user_id) REFERENCES users(id));",
- "CREATE TABLE expenses (id INTEGER PRIMARY KEY AUTOINCREMENT, amount REAL NOT NULL, date DATE NOT NULL, description TEXT, category_id INTEGER NOT NULL, user_id INTEGER NOT NULL, FOREIGN KEY(category_id) REFERENCES categories(id), FOREIGN KEY(user_id) REFERENCES users(id));",
- "CREATE TABLE reports (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, report_type TEXT NOT NULL, generated_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(user_id) REFERENCES users(id));"]
+>>> generate_schema(['User authentication', 'Expense entry', 'Reporting'])
+["CREATE TABLE Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password_hash TEXT NOT NULL);", "CREATE TABLE Categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);", "CREATE TABLE Expenses (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, category_id INTEGER NOT NULL, amount REAL NOT NULL, date TEXT NOT NULL, description TEXT, FOREIGN KEY(user_id) REFERENCES Users(id), FOREIGN KEY(category_id) REFERENCES Categories(id));", "CREATE TABLE Reports (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, report_type TEXT NOT NULL, generated_at TEXT NOT NULL, FOREIGN KEY(user_id) REFERENCES Users(id));"]
 ```
 
 ```python
->>> define_backend_schema(['User can set a monthly spending limit'])
-["CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, email TEXT, monthly_limit REAL);"]
-```
-
-
-
----
-
-## create_user_authentication
-
-### Description
-Develop user account management features for secure login and data isolation.
-
-### Conceptual Info
-
-Generates the backend authentication module (e.g., auth.py) that implements user registration, login, logout, password management, and session handling based on the UI components produced by the design_ui_components node.
-
-### Docstring
-
-**Summary:** Create an authentication module identifier based on UI component specifications.
-
-**Parameters:**
-
-- ui_components (List[str]): List of UI component names generated by the design_ui_components node, such as 'login_screen' and 'signup_form'.
-**Returns:** str - Filename or identifier of the generated authentication module (e.g., 'auth.py').
-
-**Raises:**
-
-- ValueError: If the required UI components for authentication (e.g., a login screen) are missing from ui_components.
-- RuntimeError: If the authentication module cannot be generated due to internal processing errors.
-**Examples:**
-
-```python
->>> generate_auth_module(['login_screen', 'signup_form', 'password_reset'])
-'auth.py'
-```
-
-```python
->>> generate_auth_module(['dashboard', 'expense_entry'])
-ValueError: Required authentication UI components not found.
+>>> generate_schema([])
+ValueError: Requirements list cannot be empty.
 ```
 
 
@@ -197,33 +151,75 @@ Build backend data persistence layer handling all CRUD operations.
 
 ### Conceptual Info
 
-Creates the server‑side data layer for the expense tracker, establishing database tables defined by the schema node and exposing RESTful API endpoints that enable secure Create, Read, Update, and Delete operations for users and expenses.
+This node materializes the persistent storage layer for the expense‑tracker application. It translates the database schema produced by the "set_backend_data_structure" node and the UI component contracts from "design_ui_components" into concrete database tables, ORM models, and a set of RESTful API endpoints that expose secure Create, Read, Update, and Delete (CRUD) operations for users and expenses.
 
 ### Docstring
 
-**Summary:** Configure the database and generate CRUD API endpoints for the expense‑tracker backend.
+**Summary:** Creates database tables and RESTful API endpoints for user and expense management, returning the list of exposed endpoint paths.
 
-**Returns:** List[str] - A list of endpoint routes that have been implemented (e.g., ['/expenses', '/expenses/<id>', '/users', '/users/<id>']).
+**Parameters:**
+
+- db_tables (List[str]): Table definitions supplied by the parent node "set_backend_data_structure" (e.g., ['Users', 'Expenses', 'Categories', 'Reports']).
+- ui_components (List[str]): UI component identifiers from "design_ui_components" that dictate which resources need corresponding endpoints (e.g., ['login_screen', 'expense_form', 'report_dashboard']).
+**Returns:** List[str] - List of generated API endpoint paths, ready to be registered with the web framework (e.g., ['/users', '/expenses']).
 
 **Raises:**
 
-- RuntimeError: If database initialization fails or required tables from the schema are missing.
-- ValueError: If generated endpoint definitions conflict with existing routes.
+- ValueError: If `db_tables` is empty or does not contain required tables such as 'Users' or 'Expenses'.
+- ConnectionError: If the underlying database cannot be initialized or connected during the setup phase.
 **Examples:**
 
 ```python
->>> api_routes = implement_data_storage()
-['/expenses', '/expenses/<id>', '/users', '/users/<id>']
+>>> api_endpoints = create_api_endpoints(
+...     db_tables=['Users', 'Expenses', 'Categories', 'Reports'],
+...     ui_components=['login_screen', 'expense_form', 'report_dashboard']
+>>> )
+['/users', '/expenses', '/categories', '/reports']
 ```
 
 ```python
->>> # After calling the function, the server would expose the following routes:
->>> for route in api_routes:
-...     print(route)
-/expenses
-/expenses/<id>
-/users
-/users/<id>
+>>> create_api_endpoints(db_tables=[], ui_components=['login_screen'])
+ValueError: No database tables defined.
+```
+
+
+
+---
+
+## create_user_authentication
+
+### Description
+Develop user account management features for secure login and data isolation.
+
+### Conceptual Info
+
+Generates the authentication backend module that provides secure user registration, login, logout, password reset, and session management, integrating with the UI components defined by the design phase.
+
+### Docstring
+
+**Summary:** Create an authentication module based on UI component specifications.
+
+**Parameters:**
+
+- ui_components (list[str]): List of UI component names produced by the design_ui_components node (e.g., ['login_screen', 'signup_form']).
+**Returns:** str - Path or identifier of the generated authentication module (e.g., 'auth.py').
+
+**Raises:**
+
+- ValueError: If required UI components for authentication (e.g., 'login_screen') are missing from ui_components.
+- RuntimeError: If the authentication module cannot be generated due to internal errors.
+**Examples:**
+
+```python
+>>> ui = ['login_screen', 'signup_form', 'settings_page']
+>>> auth_path = create_auth_module(ui)
+'auth.py'
+```
+
+```python
+>>> ui = ['dashboard', 'expense_list']
+>>> create_auth_module(ui)
+ValueError: Missing required authentication UI components: login_screen
 ```
 
 
@@ -237,27 +233,33 @@ Create frontend components for expense data entry with validation.
 
 ### Conceptual Info
 
-This node generates frontend UI components for entering expense data, ensuring local validation of user inputs such as amount, category, date, and description to facilitate accurate data collection.
+Generates the identifiers of all frontend form components required for expense entry, synthesizing UI component specifications and backend data model definitions, and embeds client‑side validation rules to ensure data integrity before submission.
 
 ### Docstring
 
-**Summary:** This function creates frontend expense entry forms with integrated validation logic.
+**Summary:** Create expense‑entry form components with client‑side validation based on UI specs and backend schema.
 
 **Parameters:**
 
-- inputs (dict): Dictionary containing design and data structure inputs, including UI component specifications and database schema details.
-**Returns:** dict - A dictionary with a key 'frontend_forms' mapping to a list of form component names created for expense entry.
+- ui_components (List[str]): List of UI component names produced by the design_ui_components node (e.g., ['ExpenseForm', 'DatePicker']).
+- db_tables (List[str]): List of database table definitions from the set_backend_data_structure node (e.g., ['Users', 'Expenses', 'Categories']).
+**Returns:** List[str] - Names of the generated frontend form components ready for integration (e.g., ['ExpenseFormComponent']).
 
 **Raises:**
 
-- ValueError: If required data structures or UI specifications are missing or invalid.
-- Exception: For any other errors during form creation or validation logic setup.
+- ValueError: If required UI components or database table definitions are missing, or if validation rules cannot be derived.
 **Examples:**
 
 ```python
->>> forms = create_expense_entry_forms({'ui_components': ['AmountField', 'CategoryDropdown', 'DatePicker', 'DescriptionText']}, {'db_tables': ['Expenses']})
->>> print(forms)
-["ExpenseAmountForm", "ExpenseCategoryForm", "ExpenseDateForm", "ExpenseDescriptionForm"]
+>>> ui = ['ExpenseForm', 'DatePicker', 'CategoryDropdown']
+>>> tables = ['Users', 'Expenses', 'Categories']
+>>> forms = generate_frontend_forms(ui, tables)
+['ExpenseFormComponent']
+```
+
+```python
+>>> generate_frontend_forms([], ['Expenses'])
+ValueError: UI component specifications are required to create forms.
 ```
 
 
@@ -271,31 +273,38 @@ Create the frontend component to display the list of expenses with full CRUD con
 
 ### Conceptual Info
 
-Generates the expense‑list UI component that presents stored expenses and provides full Create, Read, Update, Delete interactions, including filtering and sorting, by integrating UI wireframes and backend API contracts.
+Generates a reusable frontend component that renders the expense list, incorporates filtering, sorting, and in‑place editing/deletion, and wires the UI to the backend expense APIs defined by implement_data_storage. The component name is returned for downstream consumption (e.g., routing, testing).
 
 ### Docstring
 
-**Summary:** Creates the expense list view component integrating UI specifications and backend API endpoints.
+**Summary:** Creates the expense‑list UI component with full CRUD capabilities and returns its identifier.
 
 **Parameters:**
 
-- ui_components (List[str]): List of UI component names produced by the design_ui_components node (e.g., ['ExpenseList', 'ExpenseItem']).
-- api_endpoints (List[str]): List of backend API endpoint paths supplied by the implement_data_storage node (e.g., ['/expenses', '/expenses/{id}']).
-**Returns:** str - Filename or identifier of the generated expense view component (e.g., 'ExpenseListComponent.jsx').
+- ui_components (List[str]): List of UI component names produced by the design_ui_components node (e.g., ['LoginScreen', 'ExpenseEntryForm', 'ExpenseList']).
+- api_endpoints (List[str]): List of backend API endpoint paths produced by the implement_data_storage node (e.g., ['/expenses', '/users']).
+**Returns:** str - The filename or identifier of the generated expense‑list component (e.g., 'ExpenseList.jsx').
 
 **Raises:**
 
-- ValueError: If either ui_components or api_endpoints is empty or missing required entries.
+- ValueError: If the required UI component name for the expense list is missing from ui_components.
+- RuntimeError: If the necessary '/expenses' API endpoint is not present in api_endpoints.
 **Examples:**
 
 ```python
->>> generate_expense_view(["ExpenseList", "ExpenseItem"], ["/expenses", "/expenses/{id}"])
-"ExpenseListComponent.jsx"
+>>> component_id = develop_expense_view(
+...     ui_components=['LoginScreen', 'ExpenseEntryForm', 'ExpenseList'],
+...     api_endpoints=['/expenses', '/users']
+>>> )
+'ExpenseList.jsx'
 ```
 
 ```python
->>> generate_expense_view(["ExpenseList"], ["/expenses"])
-"ExpenseListComponent.jsx"
+>>> develop_expense_view(
+...     ui_components=['LoginScreen', 'ExpenseEntryForm'],
+...     api_endpoints=['/expenses']
+>>> )
+ValueError: Required UI component 'ExpenseList' not found.
 ```
 
 
@@ -309,35 +318,32 @@ Generate functions to produce summary reports, charts, and analytics for expense
 
 ### Conceptual Info
 
-This node creates the report‑dashboard module that aggregates expense data, computes key metrics (total spend, spend per category, period‑based trends) and renders them as charts/graphs for end‑users.
+Creates the report dashboard component that aggregates expense data, computes totals, category breakdowns, and time‑based analytics, and renders visual charts for the expense tracker application.
 
 ### Docstring
 
-**Summary:** Generate a report dashboard component that summarizes expense data with visualizations.
+**Summary:** Generate the report dashboard component for expense summaries and visualizations.
 
 **Parameters:**
 
-- ui_components (List[str]): List of UI component identifiers produced by the design_ui_components node (e.g., ['login_screen', 'expense_entry_form', 'report_dashboard']).
-- api_endpoints (List[str]): List of backend API endpoint identifiers from the implement_data_storage node (e.g., ['/expenses', '/reports']).
-**Returns:** str - Filename or module identifier of the generated report dashboard component (e.g., 'report_dashboard.py').
+- ui_components (List[str]): List of UI component names generated by the design step, must include a placeholder for the report dashboard screen.
+- api_endpoints (List[str]): List of backend API endpoints provided by the storage layer, used to fetch expense data.
+**Returns:** str - Filename or identifier of the generated report dashboard component (e.g., 'report_dashboard.py').
 
 **Raises:**
 
-- ValueError: If either ui_components or api_endpoints is empty or None.
-- RuntimeError: If the dashboard generation process fails due to template rendering or missing dependencies.
+- ValueError: If the required UI component for the dashboard is missing from ui_components.
+- RuntimeError: If necessary API endpoints for expense retrieval are not present.
 **Examples:**
 
 ```python
->>> dashboard_file = generate_report_dashboard(
-...     ui_components=['report_dashboard'],
-...     api_endpoints=['/expenses', '/reports']
->>> )
+>>> create_report_dashboard(['LoginScreen', 'ReportDashboard'], ['/expenses', '/users'])
 'report_dashboard.py'
 ```
 
 ```python
->>> generate_report_dashboard([], ['/expenses'])
-ValueError: ui_components must be a non‑empty list
+>>> create_report_dashboard(['ReportDashboard'], ['/expenses'])
+'report_dashboard.py'
 ```
 
 
@@ -351,28 +357,34 @@ Ensure comprehensive testing covering all functional aspects of the app.
 
 ### Conceptual Info
 
-Generates a complete automated test suite that validates input handling, backend CRUD APIs, authentication flows, UI rendering, and reporting calculations for the expense tracker application.
+Generates a comprehensive automated test suite that validates input handling, data‑layer CRUD operations, authentication flows, UI rendering, and report calculations for the expense‑tracker application.
 
 ### Docstring
 
-**Summary:** Generate a list of test case identifiers that comprehensively exercise all core components of the expense tracker app.
+**Summary:** Generate a list of test case identifiers covering all functional components of the expense‑tracker app.
 
-**Returns:** List[str] - Identifiers or filenames of the generated test cases covering validation, CRUD, auth, UI, and reports.
+**Parameters:**
+
+- frontend_forms (List[str]): Identifiers or filenames of the expense entry form components produced by `implement_data_input`.
+- api_endpoints (List[str]): Backend API endpoint paths (e.g., "/expenses", "/users") generated by `implement_data_storage`.
+- auth_module (str): Identifier or filename of the authentication module created by `create_user_authentication`.
+- expense_view_component (str): Identifier or filename of the UI component that displays the expense list, from `develop_expense_view`.
+- report_dashboard_component (str): Identifier or filename of the report/dashboard component generated by `develop_summary_reports`.
+**Returns:** List[str] - A list of test case identifiers or filenames that collectively validate the entire application.
 
 **Raises:**
 
-- ValueError: If any of the required dependent modules are unavailable or failed to provide necessary metadata.
-- RuntimeError: If test generation fails due to internal template errors.
+- ValueError: If any required input collection is empty or None, indicating missing upstream artifacts.
 **Examples:**
 
 ```python
->>> generate_test_suite()
-['test_auth_login', 'test_auth_logout', 'test_expense_create', 'test_expense_update', 'test_expense_delete', 'test_expense_view', 'test_report_summary']
-```
-
-```python
->>> suite = generate_test_suite()
->>> len(suite)
-7
+>>> generate_test_suite(
+...     frontend_forms=["expense_form.py"],
+...     api_endpoints=["/expenses", "/users"],
+...     auth_module="auth.py",
+...     expense_view_component="expense_view.py",
+...     report_dashboard_component="report_dashboard.py"
+>>> )
+["test_input_validation.py", "test_crud_operations.py", "test_auth_flow.py", "test_ui_rendering.py", "test_report_calculations.py"]
 ```
 

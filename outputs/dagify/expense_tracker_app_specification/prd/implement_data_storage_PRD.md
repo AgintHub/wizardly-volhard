@@ -6,35 +6,38 @@ Build backend data persistence layer handling all CRUD operations.
 
 ## Conceptual Info
 
-Creates the server‑side data layer for the expense tracker, establishing database tables defined by the schema node and exposing RESTful API endpoints that enable secure Create, Read, Update, and Delete operations for users and expenses.
+This node materializes the persistent storage layer for the expense‑tracker application. It translates the database schema produced by the "set_backend_data_structure" node and the UI component contracts from "design_ui_components" into concrete database tables, ORM models, and a set of RESTful API endpoints that expose secure Create, Read, Update, and Delete (CRUD) operations for users and expenses.
 
 ## Docstring
 
 ### Summary
-Configure the database and generate CRUD API endpoints for the expense‑tracker backend.
+Creates database tables and RESTful API endpoints for user and expense management, returning the list of exposed endpoint paths.
+
+### Parameters
+
+- **db_tables** (List[str]): Table definitions supplied by the parent node "set_backend_data_structure" (e.g., ['Users', 'Expenses', 'Categories', 'Reports']).
+- **ui_components** (List[str]): UI component identifiers from "design_ui_components" that dictate which resources need corresponding endpoints (e.g., ['login_screen', 'expense_form', 'report_dashboard']).
 
 ### Returns
 
-List[str]: A list of endpoint routes that have been implemented (e.g., ['/expenses', '/expenses/<id>', '/users', '/users/<id>']).
+List[str]: List of generated API endpoint paths, ready to be registered with the web framework (e.g., ['/users', '/expenses']).
 
 ### Raises
 
-- RuntimeError: If database initialization fails or required tables from the schema are missing.
-- ValueError: If generated endpoint definitions conflict with existing routes.
+- ValueError: If `db_tables` is empty or does not contain required tables such as 'Users' or 'Expenses'.
+- ConnectionError: If the underlying database cannot be initialized or connected during the setup phase.
 
 ### Examples
 
 ```python
->>> api_routes = implement_data_storage()
-['/expenses', '/expenses/<id>', '/users', '/users/<id>']
+>>> api_endpoints = create_api_endpoints(
+...     db_tables=['Users', 'Expenses', 'Categories', 'Reports'],
+...     ui_components=['login_screen', 'expense_form', 'report_dashboard']
+>>> )
+['/users', '/expenses', '/categories', '/reports']
 ```
 
 ```python
->>> # After calling the function, the server would expose the following routes:
->>> for route in api_routes:
-...     print(route)
-/expenses
-/expenses/<id>
-/users
-/users/<id>
+>>> create_api_endpoints(db_tables=[], ui_components=['login_screen'])
+ValueError: No database tables defined.
 ```

@@ -6,39 +6,41 @@ Create wireframes and UI component specifications for the app screens.
 
 ## Conceptual Info
 
-Transforms high‑level functional requirements into concrete UI component names and screen identifiers, providing a basis for wireframe creation and front‑end development.
+Generates detailed UI component names and high‑level wireframe descriptions for each application screen based on the functional requirements supplied by the parent node.
 
 ## Docstring
 
 ### Summary
-Generate a list of UI component and screen names based on supplied functional requirements.
+Create wireframes and enumerate UI component names for the expense‑tracker app.
 
 ### Parameters
 
-- **requirements** (List[str]): High‑level functional requirements produced by the parent node (e.g., login, expense entry, reporting).
+- **requirements** (List[str]): High‑level functional requirements produced by `define_app_functionality_requirements`.
 
 ### Returns
 
-List[str]: Ordered list of UI component and screen identifiers that correspond to the supplied requirements.
+List[str]: Names of UI components and screens derived from the functional requirements.
 
 ### Raises
 
-- ValueError: If the requirements list is empty or does not contain any recognizable screen keywords.
+- ValueError: If `requirements` is empty or None.
+- KeyError: If a required functional requirement cannot be mapped to a UI component.
 
 ### Examples
 
 ```python
->>> design_ui_components([
-...     "User login and authentication",
-...     "Create and edit expense entries",
-...     "View expense list with filters",
-...     "Generate expense reports and charts",
-...     "Adjust user settings"
->>> ])
+>>> requirements = [
+...     "User authentication and login",
+...     "Create, edit, and delete expense entries",
+...     "View expense list with filtering",
+...     "Generate expense summary reports",
+...     "Configure user settings"
+>>> ]
+>>> ui_components = design_ui_components(requirements)
 ['LoginScreen', 'ExpenseEntryForm', 'ExpenseListView', 'ReportDashboard', 'SettingsScreen']
 ```
 
 ```python
->>> design_ui_components(["Login", "Expense entry", "Expense list"])
-['LoginScreen', 'ExpenseEntryForm', 'ExpenseListView']
+>>> design_ui_components([])
+ValueError: requirements list cannot be empty.
 ```

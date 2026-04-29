@@ -6,34 +6,41 @@ Create the frontend component to display the list of expenses with full CRUD con
 
 ## Conceptual Info
 
-Generates the expense‑list UI component that presents stored expenses and provides full Create, Read, Update, Delete interactions, including filtering and sorting, by integrating UI wireframes and backend API contracts.
+Generates a reusable frontend component that renders the expense list, incorporates filtering, sorting, and in‑place editing/deletion, and wires the UI to the backend expense APIs defined by implement_data_storage. The component name is returned for downstream consumption (e.g., routing, testing).
 
 ## Docstring
 
 ### Summary
-Creates the expense list view component integrating UI specifications and backend API endpoints.
+Creates the expense‑list UI component with full CRUD capabilities and returns its identifier.
 
 ### Parameters
 
-- **ui_components** (List[str]): List of UI component names produced by the design_ui_components node (e.g., ['ExpenseList', 'ExpenseItem']).
-- **api_endpoints** (List[str]): List of backend API endpoint paths supplied by the implement_data_storage node (e.g., ['/expenses', '/expenses/{id}']).
+- **ui_components** (List[str]): List of UI component names produced by the design_ui_components node (e.g., ['LoginScreen', 'ExpenseEntryForm', 'ExpenseList']).
+- **api_endpoints** (List[str]): List of backend API endpoint paths produced by the implement_data_storage node (e.g., ['/expenses', '/users']).
 
 ### Returns
 
-str: Filename or identifier of the generated expense view component (e.g., 'ExpenseListComponent.jsx').
+str: The filename or identifier of the generated expense‑list component (e.g., 'ExpenseList.jsx').
 
 ### Raises
 
-- ValueError: If either ui_components or api_endpoints is empty or missing required entries.
+- ValueError: If the required UI component name for the expense list is missing from ui_components.
+- RuntimeError: If the necessary '/expenses' API endpoint is not present in api_endpoints.
 
 ### Examples
 
 ```python
->>> generate_expense_view(["ExpenseList", "ExpenseItem"], ["/expenses", "/expenses/{id}"])
-"ExpenseListComponent.jsx"
+>>> component_id = develop_expense_view(
+...     ui_components=['LoginScreen', 'ExpenseEntryForm', 'ExpenseList'],
+...     api_endpoints=['/expenses', '/users']
+>>> )
+'ExpenseList.jsx'
 ```
 
 ```python
->>> generate_expense_view(["ExpenseList"], ["/expenses"])
-"ExpenseListComponent.jsx"
+>>> develop_expense_view(
+...     ui_components=['LoginScreen', 'ExpenseEntryForm'],
+...     api_endpoints=['/expenses']
+>>> )
+ValueError: Required UI component 'ExpenseList' not found.
 ```
