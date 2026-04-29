@@ -1,119 +1,121 @@
 dag_type: plain_text
-description: Create and deploy a fully functional expense tracker application.
-name: build_expense_tracker
+description: A detailed, recursive, and highly concurrent workflow to develop a fully
+  operational expense tracker application, including specifications, UI, backend,
+  storage, and testing.
+name: create_functioning_expense_tracker_app
 nodes:
-  add_authentication_features:
+  create_user_authentication:
     agent: false
-    description: Add authentication and authorization.
-    name: add_authentication_features
+    description: Develop user account management features for secure login and data
+      isolation.
+    name: create_user_authentication
     nodes_depended_on:
-    - build_front_end_interface
-    - choose_database_technology
+    - design_ui_components
     nodes_dependent_on:
-    - generate_reports
-    prompt: Implement user authentication using a suitable library or framework, such
-      as OAuth or password hashing, to secure access to the expense tracker.
-  build_front_end_interface:
+    - implement_data_input
+    - implement_data_storage
+    prompt: Implement user registration, login, logout, password management, and session
+      handling, ensuring secure authentication.
+  define_app_functionality_requirements:
     agent: false
-    description: Develop the front‑end UI.
-    name: build_front_end_interface
-    nodes_depended_on:
-    - develop_api_for_data_import
-    - choose_database_technology
-    nodes_dependent_on:
-    - add_authentication_features
-    prompt: Create a user interface using HTML, CSS, and JavaScript for users to add,
-      edit, and delete expenses, view reports, and access other core features.
-  choose_database_technology:
-    agent: false
-    description: Select the database technology that will store all expense data.
-    name: choose_database_technology
+    description: Establish the comprehensive feature set required for the expense
+      tracker app.
+    name: define_app_functionality_requirements
     nodes_depended_on: []
     nodes_dependent_on:
-    - design_database_schema
-    - create_expense_categories
-    - develop_api_for_data_import
-    - implement_data_export_features
-    prompt: Choose a database technology for storing expense data, considering scalability,
-      performance, and ease of use. Provide a brief justification for your choice.
-  create_expense_categories:
+    - design_ui_components
+    - set_backend_data_structure
+    - implement_data_input
+    - implement_data_storage
+    - create_user_authentication
+    - develop_expense_view
+    - develop_summary_reports
+    - write_tests
+    prompt: List all core functionalities required for an expense tracker app, including
+      expense entry, editing, deletion, viewing, reports, user accounts, and settings.
+      Specify high-level features.
+  design_ui_components:
     agent: false
-    description: Define the set of expense categories.
-    name: create_expense_categories
+    description: Design user interface components corresponding to core functionalities.
+    name: design_ui_components
     nodes_depended_on:
-    - design_database_schema
-    - choose_database_technology
+    - define_app_functionality_requirements
     nodes_dependent_on:
-    - develop_api_for_data_import
-    prompt: Create a list of predefined expense categories to simplify data entry
-      and reporting, such as 'Food,' 'Transportation,' and 'Housing'.
-  design_database_schema:
+    - implement_data_input
+    - develop_expense_view
+    - develop_summary_reports
+    prompt: 'Create wireframes and UI component specifications for screens: login,
+      expense entry, expense list, report dashboard, and settings. Keep interfaces
+      user-friendly.'
+  develop_expense_view:
     agent: false
-    description: Create the database schema for expense data.
-    name: design_database_schema
+    description: Create the frontend component to display the list of expenses with
+      full CRUD controls.
+    name: develop_expense_view
     nodes_depended_on:
-    - choose_database_technology
+    - design_ui_components
+    - implement_data_storage
     nodes_dependent_on:
-    - create_expense_categories
-    - develop_api_for_data_import
-    - implement_data_export_features
-    prompt: Design a database schema to store expense data, including fields for expense
-      categories, dates, amounts, user associations, and bank transaction identifiers.
-  develop_api_for_data_import:
+    - create_user_authentication
+    prompt: Build the expense list display, enabling viewing, editing, and deleting
+      expenses. Use filtering and sorting as needed.
+  develop_summary_reports:
     agent: false
-    description: Create API endpoints for importing data.
-    name: develop_api_for_data_import
+    description: Generate functions to produce summary reports, charts, and analytics
+      for expenses.
+    name: develop_summary_reports
     nodes_depended_on:
-    - design_database_schema
-    - choose_database_technology
-    - create_expense_categories
+    - design_ui_components
+    - implement_data_storage
     nodes_dependent_on:
-    - integrate_bank_api
-    - implement_data_export_features
-    - generate_reports
-    prompt: Develop RESTful API endpoints for importing expense data from external
-      sources, including CSV and bank statement uploads.
-  generate_reports:
+    - create_user_authentication
+    prompt: Implement the report dashboard providing summaries such as total expenses,
+      categories, and time periods with visualizations.
+  implement_data_input:
     agent: false
-    description: Build reporting functionality.
-    name: generate_reports
+    description: Create frontend components for expense data entry with validation.
+    name: implement_data_input
     nodes_depended_on:
-    - implement_data_export_features
-    - add_authentication_features
-    - integrate_bank_api
+    - design_ui_components
+    - set_backend_data_structure
     nodes_dependent_on:
-    - proceed_to_actual_build
-    prompt: Create features to generate reports summarizing user expenses, including
-      totals, averages, and trends, considering different time periods and expense
-      categories.
-  implement_data_export_features:
+    - implement_data_storage
+    prompt: Develop the frontend forms and logic to input expense data, including
+      amount, category, date, and description. Validate user input locally.
+  implement_data_storage:
     agent: false
-    description: Add data export capabilities.
-    name: implement_data_export_features
+    description: Build backend data persistence layer handling all data CRUD operations.
+    name: implement_data_storage
     nodes_depended_on:
-    - design_database_schema
-    - choose_database_technology
-    - develop_api_for_data_import
+    - design_ui_components
+    - set_backend_data_structure
     nodes_dependent_on:
-    - generate_reports
-    prompt: Implement features to export expense data in different formats, such as
-      CSV or Excel, for users to share with accountants or financial advisors.
-  integrate_bank_api:
+    - create_user_authentication
+    prompt: Develop backend database setup and APIs to store, retrieve, update, and
+      delete expense and user data securely.
+  set_backend_data_structure:
     agent: false
-    description: Connect the application to a bank API for automatic transaction import.
-    name: integrate_bank_api
+    description: Design the data structures for backend storage of app data.
+    name: set_backend_data_structure
     nodes_depended_on:
-    - develop_api_for_data_import
+    - define_app_functionality_requirements
     nodes_dependent_on:
-    - generate_reports
-    prompt: Integrate with a bank API (e.g., Plaid or similar) to automatically pull
-      recent transactions and map them to expense categories.
-  proceed_to_actual_build:
+    - implement_data_storage
+    - implement_data_input
+    prompt: Define the database schema or data models for users, expenses, categories,
+      and reports. Specify data types and relationships.
+  write_tests:
     agent: false
-    description: Trigger the final build and deployment.
-    name: proceed_to_actual_build
+    description: Ensure comprehensive testing covering all functional aspects of the
+      app.
+    name: write_tests
     nodes_depended_on:
-    - generate_reports
-    nodes_dependent_on: []
-    prompt: Deploy the fully built expense tracker application to the target environment,
-      ensuring all services are operational and accessible to end users.
+    - implement_data_input
+    - implement_data_storage
+    - create_user_authentication
+    - develop_expense_view
+    - develop_summary_reports
+    nodes_dependent_on:
+    - define_app_functionality_requirements
+    prompt: 'Create automated tests for each core component: input validation, CRUD
+      operations, user auth, UI rendering, and report calculations.'
