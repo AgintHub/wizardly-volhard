@@ -1,0 +1,99 @@
+dag_type: plain_text
+description: Create a web-based application for users to track their expenses and
+  generate reports.
+name: build_expense_tracker
+nodes:
+  add_authentication_features:
+    agent: false
+    description: Implement user authentication using a suitable library or framework
+      to secure access to the expense tracker.
+    name: add_authentication_features
+    nodes_depended_on:
+    - build_front_end_interface
+    - choose_database_technology
+    nodes_dependent_on:
+    - build_front_end_interface
+    prompt: Implement user authentication using a suitable library or framework, such
+      as OAuth or password hashing, to secure access to the expense tracker.
+  build_front_end_interface:
+    agent: false
+    description: Create a user interface using HTML, CSS, and JavaScript for users
+      to interact with the expense tracker.
+    name: build_front_end_interface
+    nodes_depended_on:
+    - develop_api_for_data_import
+    - choose_database_technology
+    nodes_dependent_on:
+    - develop_api_for_data_import
+    prompt: Create a user interface using HTML, CSS, and JavaScript for users to add,
+      edit, and delete expenses, view reports, and access other core features.
+  choose_database_technology:
+    agent: false
+    description: Select a suitable database technology for storing expense data.
+    name: choose_database_technology
+    nodes_depended_on: []
+    nodes_dependent_on: []
+    prompt: Choose a database technology for storing expense data, considering scalability,
+      performance, and ease of use. Please provide a brief justification for your
+      choice.
+  create_expense_categories:
+    agent: false
+    description: Create a list of predefined expense categories to simplify data entry
+      and reporting.
+    name: create_expense_categories
+    nodes_depended_on:
+    - design_database_schema
+    - choose_database_technology
+    nodes_dependent_on:
+    - design_database_schema
+    prompt: Create a list of predefined expense categories to simplify data entry
+      and reporting, considering common expense categories like 'Food,' 'Transportation,'
+      and 'Housing'.
+  design_database_schema:
+    agent: false
+    description: Create a database schema to store expense data with all relevant
+      fields and relationships.
+    name: design_database_schema
+    nodes_depended_on:
+    - choose_database_technology
+    nodes_dependent_on:
+    - choose_database_technology
+    prompt: Design a database schema to store expense data, including fields for expense
+      categories, dates, amounts, and user associations.
+  develop_api_for_data_import:
+    agent: false
+    description: Create RESTful API endpoints for importing expense data from external
+      sources.
+    name: develop_api_for_data_import
+    nodes_depended_on:
+    - design_database_schema
+    - choose_database_technology
+    nodes_dependent_on:
+    - design_database_schema
+    prompt: Develop API endpoints for importing expense data from external sources,
+      such as bank statements or CSV files, in JSON format.
+  generate_reports:
+    agent: false
+    description: Create features to generate reports summarizing user expenses, including
+      totals, averages, and trends.
+    name: generate_reports
+    nodes_depended_on:
+    - implement_data_export_features
+    - add_authentication_features
+    nodes_dependent_on:
+    - implement_data_export_features
+    prompt: Create features to generate reports summarizing user expenses, including
+      totals, averages, and trends, considering different time periods and expense
+      categories.
+  implement_data_export_features:
+    agent: false
+    description: Implement features to export expense data in different formats, such
+      as CSV or Excel.
+    name: implement_data_export_features
+    nodes_depended_on:
+    - design_database_schema
+    - choose_database_technology
+    nodes_dependent_on:
+    - design_database_schema
+    prompt: Implement features to export expense data in different formats, such as
+      CSV or Excel, for users to share with accountants or financial advisors.
